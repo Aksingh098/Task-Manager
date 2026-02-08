@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,9 +42,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.text.style.TextDecoration
 
-
-
+private  const val TAG = "MainActivity"
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,11 +71,13 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun TaskManagerApp(modifier: Modifier = Modifier) {
+
+    val tasks = rememberSaveable() {fakeTasks.toMutableStateList()}
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* Handle click action */ },
-                // Additional configurations
+                onClick = {  },
+
             ) {
                 Icon(imageVector = Icons.Default.Add,
                     contentDescription = "Add Task")
@@ -81,8 +89,16 @@ fun TaskManagerApp(modifier: Modifier = Modifier) {
                 .padding(innerPadding)
                 .padding(14.dp)
         ) {
-            items(fakeTasks){task ->
-                TaskCard(task = task)
+            items(tasks){task ->
+                TaskCard(
+                    task = task,
+                    onCheckedChange = { newValue->
+
+                        val index = tasks.indexOf(task)
+                        tasks[index] = task.copy(isCompleted = newValue)
+
+                    }
+                )
 
 
             }
@@ -98,6 +114,7 @@ fun TaskManagerApp(modifier: Modifier = Modifier) {
 @Composable
 fun TaskCard(
     modifier: Modifier = Modifier,
+    onCheckedChange: (Boolean) -> Unit,
     task: Task
 ) {
     Card(
@@ -113,17 +130,37 @@ fun TaskCard(
         ){
             Box(
                 modifier = Modifier
-                    .padding(10.dp)
                     .width(6.dp)
                     .fillMaxHeight()
                     .background(getPriorityColor(task.priority)),
             )
 
-            Column(modifier = Modifier) {
+            Spacer(modifier = Modifier.width(1.dp))
+
+            Checkbox(
+                checked = task.isCompleted,
+                onCheckedChange = {newValue->
+                    onCheckedChange(newValue)
+                }
+            )
+
+            Column(modifier = Modifier
+                .weight(1f)) {
+
+
+                val textStyle = if (task.isCompleted) {
+                    LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough,
+                        color = Color.Gray.copy(alpha = 0.6f))
+                } else {
+                    LocalTextStyle.current
+                }
+
+
                 Text(
                     text = task.title,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
+                    style = textStyle
                 )
                 Text(
                     text = task.description,
