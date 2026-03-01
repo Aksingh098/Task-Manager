@@ -48,6 +48,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.text.style.TextDecoration
+import com.example.taskmanager.ui.AddTaskScreen
+import com.example.taskmanager.ui.TaskManagerScreen
 
 private  const val TAG = "MainActivity"
 class MainActivity : ComponentActivity() {
@@ -61,7 +63,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TaskManagerApp(modifier= Modifier)
+                    //TaskManagerScreen(modifier= Modifier)
+                    AddTaskScreen()
 
                 }
             }
@@ -69,109 +72,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun TaskManagerApp(modifier: Modifier = Modifier) {
-
-    val tasks = rememberSaveable() {fakeTasks.toMutableStateList()}
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {  },
-
-            ) {
-                Icon(imageVector = Icons.Default.Add,
-                    contentDescription = "Add Task")
-            }
-        }
-    ) {innerPadding->
-        LazyColumn(
-            modifier
-                .padding(innerPadding)
-                .padding(14.dp)
-        ) {
-            items(tasks){task ->
-                TaskCard(
-                    task = task,
-                    onCheckedChange = { newValue->
-
-                        val index = tasks.indexOf(task)
-                        tasks[index] = task.copy(isCompleted = newValue)
-
-                    }
-                )
-
-
-            }
-        }
-    }
-
-
-
-}
-
-
-
-@Composable
-fun TaskCard(
-    modifier: Modifier = Modifier,
-    onCheckedChange: (Boolean) -> Unit,
-    task: Task
-) {
-    Card(
-        modifier = modifier.padding(8.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min)
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ){
-            Box(
-                modifier = Modifier
-                    .width(6.dp)
-                    .fillMaxHeight()
-                    .background(getPriorityColor(task.priority)),
-            )
-
-            Spacer(modifier = Modifier.width(1.dp))
-
-            Checkbox(
-                checked = task.isCompleted,
-                onCheckedChange = {newValue->
-                    onCheckedChange(newValue)
-                }
-            )
-
-            Column(modifier = Modifier
-                .weight(1f)) {
-
-
-                val textStyle = if (task.isCompleted) {
-                    LocalTextStyle.current.copy(textDecoration = TextDecoration.LineThrough,
-                        color = Color.Gray.copy(alpha = 0.6f))
-                } else {
-                    LocalTextStyle.current
-                }
-
-
-                Text(
-                    text = task.title,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    style = textStyle
-                )
-                Text(
-                    text = task.description,
-                    fontSize = 18.sp,
-                    color = Color.Gray
-
-                    )
-            }
-
-
-        }
-    }
-
-}

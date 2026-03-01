@@ -1,7 +1,7 @@
 package com.example.taskmanager.model
 
 data class Task (
-    val id: Int,
+    val id: Int = 0,
     val title: String,
     val description: String,
     val priority: Priority,
