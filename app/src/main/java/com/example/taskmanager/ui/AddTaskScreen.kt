@@ -43,12 +43,12 @@ import com.example.taskmanager.ui.theme.getPriorityColor
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTaskScreen(
-    addTaskViewModel: AddTaskViewModel = viewModel(),
+    taskViewModel: TaskViewModel = viewModel(),
     onSave: (String, String, Priority) -> Unit,
     onCancel: () -> Unit
 
 ){
-    val addTaskUiState by addTaskViewModel.uiState.collectAsState()
+    val addTaskUiState by taskViewModel.taskUiState.collectAsState()
 
 
     Scaffold(
@@ -74,7 +74,7 @@ fun AddTaskScreen(
                 Column() {
                     OutlinedTextField(
                         value = addTaskUiState.title,
-                        onValueChange = {addTaskViewModel.addTitle(it)},
+                        onValueChange = {taskViewModel.addTitle(it)},
                         label = {Text(stringResource(R.string.task_title))},
                         modifier = Modifier
                             .padding(10.dp)
@@ -85,7 +85,7 @@ fun AddTaskScreen(
                     OutlinedTextField(
                         value = addTaskUiState.description,
                         onValueChange = {
-                            addTaskViewModel.addDescription(it)
+                            taskViewModel.addDescription(it)
                         },
                         label = {Text(stringResource(R.string.description))},
                         modifier = Modifier
@@ -97,7 +97,9 @@ fun AddTaskScreen(
 
                     PrioritySelector(
                         selectedPriority = addTaskUiState.selectedpriority,
-                        onPrioritySelected = { addTaskViewModel.updatePriority(it) }
+                        onPrioritySelected = {
+                            taskViewModel.updatePriority(priority = it)
+                        }
                     )
 
                     Spacer(modifier = Modifier.padding(10.dp))

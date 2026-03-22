@@ -5,7 +5,7 @@ import com.example.taskmanager.model.Task
 import com.example.taskmanager.model.fakeTasks
 
 data class TaskUiState(
-    val itemList: List<Task> = fakeTasks,
+    val itemList: List<Task> =fakeTasks
 
 
     )
